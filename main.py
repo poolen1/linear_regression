@@ -9,8 +9,6 @@ labels = pd.read_csv("MNIST_LABEL.csv")
 # Concatenate sets to randomize samples
 data_set.insert(0, 'labels', labels)
 
-# print(data_set)
-
 # shuffle dataframe
 data_set = data_set.sample(frac=1).reset_index(drop=True)
 
@@ -21,15 +19,12 @@ n, p = data_set.shape
 # less 1 to account for labels column
 p -= 1
 
-# print("n, p: ", n, p)
-
 # Encode labels as 0 and 1
 y = np.zeros(n)
 y[data_set.iloc[:, 0] > 5] = 1
 
 # Separate labels
 X = data_set.iloc[:, 1:-1]
-# print(X)
 X = pd.DataFrame(np.c_[np.ones(n), X])
 
 # Normalize data
