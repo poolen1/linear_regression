@@ -55,7 +55,6 @@ for i in range(len(training_sets)):
     X = training_sets[i]
     y = training_labels[i]
     b_opts.append(np.dot(np.dot(np.linalg.pinv(np.dot(X.transpose(), X)), X.transpose()), y))
-    i += 1
 
 # Calculate evaluation metrics
 accuracies = []
