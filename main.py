@@ -64,19 +64,49 @@ for i in range(len(training_sets)):
 
 # print(b_opts)
 
-# Calculate accuracies
+# Calculate evaluation metrics
 accuracies = []
+TPRs = []
+FPRs = []
 i = 0
 for i in range(len(b_opts)):
+    true_pos = 0
+    true_neg = 0
+    false_pos = 0
+    false_neg = 0
+
     X_test = test_set
     y_groundtruth = test_labels
     b_opt = b_opts[i]
+
+    # print(np.array(np.dot(X_test, b_opt)))
+    # print(X_test)
+
+    true_pos += sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth)
+    true_neg += sum(np.array(np.dot(X_test, b_opt) <= 0.5) == y_groundtruth)
+    false_pos += sum(np.array(np.dot(X_test, b_opt) > 0.5) != y_groundtruth)
+    false_neg += sum(np.array(np.dot(X_test, b_opt) <= 0.5) != y_groundtruth)
+
+    TPRs.append(true_pos / (true_pos + false_neg))
+    FPRs.append(false_pos / (false_pos + true_neg))
     accuracies.append(sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) / len(y_groundtruth))
 
 avg_acc = sum(accuracies)
 avg_acc = avg_acc / len(accuracies)
-print(accuracies)
-print(avg_acc)
+print("|===========|=======|=======|")
+print("| Accuracy  | TPR   | FPR   |")
+print("|===========|=======|=======|")
+for i in range(len(accuracies)):
+    print("|   " + str(round(accuracies[i]*100, 1)) + "%   |"
+          + " " + str(round(TPRs[i]*100, 1)) + "% |"
+          + " " + str(round(FPRs[i]*100, 1)) + "% |")
+print("|===========|=======|=======|")
+# print(accuracies)
+print("|  Average Accuracy: " + str(round(avg_acc*100, 1)) + "%  |")
+print("|===========|=======|=======|")
+
+# Calculate True Positive Rate (TPR)
+
 
 # pd.set_option("display.max_rows", None, "display.max_columns", None)
 # print(y)
