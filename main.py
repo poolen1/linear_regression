@@ -62,37 +62,34 @@ for i in range(len(training_sets)):
     b_opts.append(np.dot(np.dot(np.linalg.pinv(np.dot(X.transpose(), X)), X.transpose()), y))
     i += 1
 
-# print(b_opts)
-
 # Calculate evaluation metrics
 accuracies = []
 TPRs = []
 FPRs = []
 i = 0
 for i in range(len(b_opts)):
-    true_pos = 0
-    true_neg = 0
-    false_pos = 0
-    false_neg = 0
-
     X_test = test_set
-    y_groundtruth = test_labels
+    y_groundtruth = test_labels.astype(int)
+
     b_opt = b_opts[i]
+    predictions = (np.array(np.dot(X_test, b_opt)) > 0.5).astype(int)
 
-    # print(np.array(np.dot(X_test, b_opt)))
-    # print(X_test)
+    # Get confusion matrix sums
+    true_pos = np.logical_and(predictions == 1, y_groundtruth == 1).sum()
+    true_neg = np.logical_and(predictions == 0, y_groundtruth == 0).sum()
+    false_pos = np.logical_and(predictions == 1, y_groundtruth == 0).sum()
+    false_neg = np.logical_and(predictions == 0, y_groundtruth == 1).sum()
 
-    true_pos += sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth)
-    true_neg += sum(np.array(np.dot(X_test, b_opt) <= 0.5) == y_groundtruth)
-    false_pos += sum(np.array(np.dot(X_test, b_opt) > 0.5) != y_groundtruth)
-    false_neg += sum(np.array(np.dot(X_test, b_opt) <= 0.5) != y_groundtruth)
-
+    # Calc metrics
     TPRs.append(true_pos / (true_pos + false_neg))
     FPRs.append(false_pos / (false_pos + true_neg))
-    accuracies.append(sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) / len(y_groundtruth))
+    acc = sum(np.array(np.dot(X_test, b_opt) > 0.5) == y_groundtruth) / len(y_groundtruth)
+    accuracies.append(acc)
 
 avg_acc = sum(accuracies)
 avg_acc = avg_acc / len(accuracies)
+
+# Print Eval Metrics table
 print("|===========|=======|=======|")
 print("| Accuracy  | TPR   | FPR   |")
 print("|===========|=======|=======|")
@@ -104,10 +101,3 @@ print("|===========|=======|=======|")
 # print(accuracies)
 print("|  Average Accuracy: " + str(round(avg_acc*100, 1)) + "%  |")
 print("|===========|=======|=======|")
-
-# Calculate True Positive Rate (TPR)
-
-
-# pd.set_option("display.max_rows", None, "display.max_columns", None)
-# print(y)
-# print(X)
